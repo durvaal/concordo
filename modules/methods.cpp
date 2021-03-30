@@ -201,7 +201,7 @@ void setServerInviteCode(char *arguments) {
   validateRequiredField(serverName, "serverName");
   char *inviteCode = strtok(NULL, "");
 
-  bool updatedDescription = false;
+  bool updatedInviteCode = false;
   class Server *server = new Server();
 
   server->setName(convertCharToString(serverName));
@@ -215,7 +215,7 @@ void setServerInviteCode(char *arguments) {
   for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
     if (concordoSystem->getServers().at(i)->getName() == server->getName()) {
       if (concordoSystem->getServers().at(i)->getOwnerUserId() == concordoSystem->getUserLoggedId()) {
-        updatedDescription = true;
+        updatedInviteCode = true;
         concordoSystem->getServers().at(i)->setInviteCode(server->getInviteCode());
       } else {
         std::ostringstream oss;
@@ -225,7 +225,7 @@ void setServerInviteCode(char *arguments) {
     }
   }
 
-  if (updatedDescription) {
+  if (updatedInviteCode) {
     if (server->getInviteCode() == "") {
       cout << "\n::: Removed '" << server->getName() << "' server invite code! :::\n\n";
     } else {
