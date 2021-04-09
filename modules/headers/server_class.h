@@ -27,6 +27,8 @@ class Server {
     void setInviteCode(std::string inviteCode);
     void setChannels(std::vector <Channel *> channels);
     void setParticipantIds(std::vector <int> participantIds);
+    void addChannel(Channel *channel);
+    void addParticipant(int participantId);
 
     int getOwnerUserId();
     std::string getName();

@@ -1,6 +1,9 @@
 #include "./headers/server_class.h"
 
-Server::Server(){};
+Server::Server(){
+  this->channels.reserve(1000);
+  this->participantIds.reserve(1000);
+};
 Server::~Server(){};
 
 void Server::setOwnerUserId(int ownerUserId) {
@@ -20,6 +23,12 @@ void Server::setChannels(std::vector <Channel *> channels) {
 }
 void Server::setParticipantIds(std::vector <int> participantIds) {
   this->participantIds = participantIds;
+}
+void Server::addChannel(Channel *channel) {
+  this->channels.push_back(channel);
+}
+void Server::addParticipant(int participantId) {
+  this->participantIds.push_back(participantId);
 }
 
 int Server::getOwnerUserId() {

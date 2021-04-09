@@ -35,6 +35,7 @@ class System {
     int getUserLoggedId();
     std::string getCurrentServerName();
     std::string getCurrentChannelName();
+    User * getUserById(int id);
 };
 
 #endif

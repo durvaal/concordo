@@ -1,4 +1,5 @@
 #include <string>
+#include "server_class.h"
 
 using namespace std;
 
@@ -15,6 +16,10 @@ void createServer(char *arguments);
 void setServerDescription(char *arguments);
 void setServerInviteCode(char *arguments);
 void listServers();
+bool userHasAlreadyEnteredTheServer(Server *server);
+void enterServer(char *arguments);
+void leaveServer();
+void listAvailableCommands();
 void initializeProgram();
 
 #endif

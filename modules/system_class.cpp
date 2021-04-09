@@ -4,6 +4,7 @@ System::System(){
   this->users.reserve(1000);
   this->servers.reserve(1000);
   this->userLoggedId = 0;
+  this->currentServerName = "";
 };
 System::~System(){};
 
@@ -43,4 +44,14 @@ std::string System::getCurrentServerName() {
 }
 std::string System::getCurrentChannelName() {
   return this->currentChannelName;
+}
+User * System::getUserById(int id) {
+  User *user = new User();
+  for (std::vector<int>::size_type i = 0; i < this->getUsers().size(); i++) {
+    if (this->getUsers().at(i)->getId() == id) {
+      user =  this->getUsers().at(i);
+    }
+  }
+
+  return user;
 }

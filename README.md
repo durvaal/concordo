@@ -19,7 +19,7 @@ make
 
 ## Métodos suportadas
 
-### Sair sistema
+### Sair do sistema
 
 ```
 quit
@@ -37,7 +37,7 @@ create-user <email> <senha> <nome>
 login <email> <senha>
 ```
 
-### Desconectar do sistema
+### Desconectar usuário
 
 ```
 disconnect
@@ -62,11 +62,28 @@ set-server-invite-code <nome> <codigo-de-convite>
 ```
 > Código de convite opcional.
 
-
 ### Listar servidores
 
 ```
 list-servers
+```
+
+### Entrar em um servidor
+
+```
+enter-server <nome> <codigo-de-convite>
+```
+> Código de convite opcional.
+
+### Sair do servidor atualmente conectado
+
+```
+leave-server
+```
+
+### Listar os participatentes do servidor atualmente conectado
+```
+list-participants
 ```
 
 ## WIP

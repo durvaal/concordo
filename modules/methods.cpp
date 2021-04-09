@@ -27,7 +27,7 @@ std::string convertCharToString(char *field) {
 void hasUserLogged() {
   if (concordoSystem->getUserLoggedId() == 0) {
     std::ostringstream oss;
-    oss << "Runtime error: Access denied, you must be logged, try execute command 'login <userEmail> <userPassword>";
+    oss << "Runtime error: Access denied, you must be logged, try execute command 'login <userEmail> <userPassword>'";
     throw std::runtime_error(oss.str());
   }
 }
@@ -100,6 +100,7 @@ void login(char *arguments) {
     oss << "Runtime error: Invalid email or password";
     throw std::runtime_error(oss.str());
   } else {
+    concordoSystem->setCurrentServerName("");
     std::cout << "\n::: Logged is as " << user->getEmail() << " :::\n\n"; 
   }
 }
@@ -114,6 +115,7 @@ void disconnect() {
   for (std::vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
     if (concordoSystem->getUsers().at(i)->getId() == concordoSystem->getUserLoggedId()) {
       concordoSystem->setUserLoggedId(0);
+      concordoSystem->setCurrentServerName("");
       std::cout << "\n::: Disconnecting user " << concordoSystem->getUsers().at(i)->getEmail() << " :::\n\n"; 
       break;
     }
@@ -252,6 +254,142 @@ void listServers() {
   }
 }
 
+bool userHasAlreadyEnteredTheServer(Server *server) {
+  bool hasAlreadyEntered = false;
+  for (std::vector<int>::size_type i = 0; i < server->getParticipantIds().size(); i++) {
+    if(server->getParticipantIds().at(i) == concordoSystem->getUserLoggedId()) {
+      hasAlreadyEntered = true;
+      break;
+    }
+  }
+
+  return hasAlreadyEntered;
+}
+
+/*
+  Entrar em um servidor com ou sem o codigo de convite
+*/
+void enterServer(char *arguments) {
+  hasUserLogged();
+
+  // Valida os campos necessário para entrar no servidor
+  char *serverName = strtok(NULL, " ");
+  validateRequiredField(serverName, "serverName");
+  char *inviteCode = strtok(NULL, "");
+
+  bool hasAccessToServer = false;
+  bool serverNotFound = true;
+  class Server *server = new Server();
+
+  server->setName(convertCharToString(serverName));
+  if (inviteCode == NULL) {
+    server->setInviteCode("");
+  } else {
+    server->setInviteCode(convertCharToString(inviteCode));
+  }
+
+  // Verifica na lista de servidores criados se existe um servidor com o nome informado
+  // Caso haja invite é verificado se o codigo está correto
+  // Antes, se o usuario logado é proprietário, a verificação do invite é desconsiderada
+  for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == server->getName()) {
+      serverNotFound = false;
+      if(userHasAlreadyEnteredTheServer(concordoSystem->getServers().at(i)) && concordoSystem->getServers().at(i)->getInviteCode() != "") {
+        hasAccessToServer = true;
+        concordoSystem->setCurrentServerName(server->getName());
+      } else {
+        if (concordoSystem->getServers().at(i)->getOwnerUserId() == concordoSystem->getUserLoggedId() && concordoSystem->getCurrentServerName() == server->getName()) {
+          hasAccessToServer = true;
+          concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+          concordoSystem->setCurrentServerName(server->getName());
+        } else {
+          if (concordoSystem->getServers().at(i)->getInviteCode() == "") {
+            hasAccessToServer = true;
+            concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+            concordoSystem->setCurrentServerName(server->getName());
+          } else {
+            if (concordoSystem->getServers().at(i)->getInviteCode() == server->getInviteCode()) {
+              hasAccessToServer = true;
+              concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+              concordoSystem->setCurrentServerName(server->getName());
+            } else {
+              std::ostringstream oss;
+              oss << "Runtime error: Server requires invitation code";
+              throw std::runtime_error(oss.str());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (serverNotFound) {
+    std::ostringstream oss;
+    oss << "Runtime error: Server '" << server->getName() << "' not found";
+    throw std::runtime_error(oss.str());
+  }
+
+  if (hasAccessToServer) {
+    cout << "\n::: Successfully logged on to the server '" << server->getName() << "' :::\n\n";
+  }
+}
+
+/*
+  Sai do servidor atualmente conectado
+*/
+void leaveServer() {
+  hasUserLogged();
+
+  if(concordoSystem->getCurrentServerName() != "") {
+    cout << "\n::: Exiting the server'" << concordoSystem->getCurrentServerName() << "' :::\n\n";
+    concordoSystem->setCurrentServerName("");
+  } else {
+    cout << "\n::: You are not viewing any servers :::\n\n";
+  }
+}
+
+/*
+  Lista todos os participantes do servidor atualmente conectado
+*/
+void listParticipants() {
+  hasUserLogged();
+
+  if(concordoSystem->getCurrentServerName() != "") {
+    cout << "\n::: Server participants :::\n\n";
+    for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+      if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+        Server *server = concordoSystem->getServers().at(i);
+        if (server->getParticipantIds().size() > 0) {
+          for (std::vector<int>::size_type j = 0; j < server->getParticipantIds().size(); j++) {
+            User *user = concordoSystem->getUserById(server->getParticipantIds().at(j));
+            cout << "★ " << user->getName() << "\n";
+          }
+        } else {
+          cout << "\n: No registered participants :\n";
+        }
+        cout << "\n";
+      }
+    }
+  } else {
+    cout << "\n::: You are not viewing any servers :::\n\n";
+  }
+}
+
+
+void listAvailableCommands() {
+  cout << "\n:::: Available Commands ::::\n\n";
+  cout << "quit                                           Exit the system\n";
+  cout << "create-user <email> <password> <name>          Create new user\n";
+  cout << "login <email> <password>                       Login user\n";
+  cout << "disconnect                                     Disconnects the user\n";
+  cout << "create-server <name>                           Create new server\n";
+  cout << "set-server-desc <name> <description>           Change server description\n";
+  cout << "set-server-invite-code <name> <inviteCode>     Change server invite code, optional inviteCode argument\n";
+  cout << "list-servers                                   List all servers\n";
+  cout << "enter-server <name> <inviteCode>               Enter in the server, optional inviteCode argument\n";
+  cout << "\n";
+}
+
 /*
   Inicializa a escuta dos comandos até que a saída seja interrompida através do comando 'quit'
   Faz a leitura da linha de comando e captura o primeiro argumento, que é separado dos demais argumentos pelo caractere de espaço
@@ -263,6 +401,7 @@ void initializeProgram() {
   char commandLine[1000];
 
   cout << "::::: Welcome to Concordo :::::\n\n";
+  cout << ":::: Type 'help' to list the available commands ::::\n\n";
 
   do {
     scanf("%[^\n]", commandLine);
@@ -289,6 +428,14 @@ void initializeProgram() {
         setServerInviteCode(arguments);
       } else if (strcmp(arguments, "list-servers") == 0) {
         listServers();
+      } else if (strcmp(arguments, "enter-server") == 0) {
+        enterServer(arguments);
+      } else if (strcmp(arguments, "leave-server") == 0) {
+        leaveServer();
+      } else if (strcmp(arguments, "leave-server") == 0) {
+        leaveServer();
+      } else if (strcmp(arguments, "list-participants") == 0) {
+        listParticipants();
       } else {
         throw std::runtime_error("Runtime error: Command not found");
       }
