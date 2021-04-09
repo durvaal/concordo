@@ -8,23 +8,23 @@ using namespace std;
 class User {
   private:
     int id;
-    std::string name;
-    std::string email;
-    std::string password;
+    string name;
+    string email;
+    string password;
 
   public:
     User();
     ~User();
 
     void setId(int id);
-    void setName(std::string name);
-    void setEmail(std::string email);
-    void setPassword(std::string password);
+    void setName(string name);
+    void setEmail(string email);
+    void setPassword(string password);
 
     int getId();
-    std::string getName();
-    std::string getEmail();
-    std::string getPassword();
+    string getName();
+    string getEmail();
+    string getPassword();
 };
 
 #endif

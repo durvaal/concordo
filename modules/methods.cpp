@@ -10,25 +10,25 @@
 class System *concordoSystem = new System();
 int currentUserId = 0;
 
-void validateRequiredField(char *field, std::string fieldName) {
+void validateRequiredField(char *field, string fieldName) {
   if (field == NULL) {
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Runtime error: The field '" << fieldName << "' has required";
-    throw std::runtime_error(oss.str());
+    throw runtime_error(oss.str());
   }
 }
 
-std::string convertCharToString(char *field) {
-  std::string fieldValueConverted;
+string convertCharToString(char *field) {
+  string fieldValueConverted;
   fieldValueConverted = field;
   return fieldValueConverted;
 }
 
 void hasUserLogged() {
   if (concordoSystem->getUserLoggedId() == 0) {
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Runtime error: Access denied, you must be logged, try execute command 'login <userEmail> <userPassword>'";
-    throw std::runtime_error(oss.str());
+    throw runtime_error(oss.str());
   }
 }
 
@@ -52,11 +52,11 @@ void createUser(char *arguments) {
   user->setName(convertCharToString(name));
 
   // Verifica na lista de usuários criados se existe um usuário com o email informado
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
     if (concordoSystem->getUsers().at(i)->getEmail() == user->getEmail()) {
-      std::ostringstream oss;
+      ostringstream oss;
       oss << "Runtime error: User with email '" << user->getEmail() << "' already exists";
-      throw std::runtime_error(oss.str());
+      throw runtime_error(oss.str());
     }
   }
 
@@ -87,7 +87,7 @@ void login(char *arguments) {
   concordoSystem->setUserLoggedId(0);
 
   // Verifica se há um usuário com o mesmo email e senha
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
     if (concordoSystem->getUsers().at(i)->getEmail() == user->getEmail()
     && concordoSystem->getUsers().at(i)->getPassword() == user->getPassword()) {
       concordoSystem->setUserLoggedId(concordoSystem->getUsers().at(i)->getId());
@@ -96,12 +96,12 @@ void login(char *arguments) {
   }
 
   if (concordoSystem->getUserLoggedId() == 0) {
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Runtime error: Invalid email or password";
-    throw std::runtime_error(oss.str());
+    throw runtime_error(oss.str());
   } else {
     concordoSystem->setCurrentServerName("");
-    std::cout << "\n::: Logged is as " << user->getEmail() << " :::\n\n"; 
+    cout << "\n::: Logged is as " << user->getEmail() << " :::\n\n"; 
   }
 }
 
@@ -112,11 +112,11 @@ void disconnect() {
   hasUserLogged();
 
   // Verifica se há um usuário com id do usuario logado
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
     if (concordoSystem->getUsers().at(i)->getId() == concordoSystem->getUserLoggedId()) {
       concordoSystem->setUserLoggedId(0);
       concordoSystem->setCurrentServerName("");
-      std::cout << "\n::: Disconnecting user " << concordoSystem->getUsers().at(i)->getEmail() << " :::\n\n"; 
+      cout << "\n::: Disconnecting user " << concordoSystem->getUsers().at(i)->getEmail() << " :::\n\n"; 
       break;
     }
   }
@@ -138,11 +138,11 @@ void createServer(char *arguments) {
   server->setOwnerUserId(concordoSystem->getUserLoggedId());
 
   // Verifica na lista de servidores criados se existe um servidor com o nome informado
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
     if (concordoSystem->getServers().at(i)->getName() == server->getName()) {
-      std::ostringstream oss;
+      ostringstream oss;
       oss << "Runtime error: Server with name '" << server->getName() << "' already exists";
-      throw std::runtime_error(oss.str());
+      throw runtime_error(oss.str());
     }
   }
 
@@ -170,15 +170,15 @@ void setServerDescription(char *arguments) {
   server->setDescription(convertCharToString(description));
 
   // Verifica na lista de servidores criados se existe um servidor com o nome informado e com o usuario logado como proprietário
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
     if (concordoSystem->getServers().at(i)->getName() == server->getName()) {
       if (concordoSystem->getServers().at(i)->getOwnerUserId() == concordoSystem->getUserLoggedId()) {
         updatedDescription = true;
         concordoSystem->getServers().at(i)->setDescription(server->getDescription());
       } else {
-        std::ostringstream oss;
+        ostringstream oss;
         oss << "Runtime error: You cannot change the description of a server that has not been created by you";
-        throw std::runtime_error(oss.str());
+        throw runtime_error(oss.str());
       }
     }
   }
@@ -186,9 +186,9 @@ void setServerDescription(char *arguments) {
   if (updatedDescription) {
     cout << "\n::: Modified '" << server->getName() << "' server description! :::\n\n";
   } else {
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Runtime error: '" << server->getName() << "' server doesn’t exist";
-    throw std::runtime_error(oss.str());
+    throw runtime_error(oss.str());
   }
 }
 
@@ -214,15 +214,15 @@ void setServerInviteCode(char *arguments) {
   }
 
   // Verifica na lista de servidores criados se existe um servidor com o nome informado e com o usuario logado como proprietário
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
     if (concordoSystem->getServers().at(i)->getName() == server->getName()) {
       if (concordoSystem->getServers().at(i)->getOwnerUserId() == concordoSystem->getUserLoggedId()) {
         updatedInviteCode = true;
         concordoSystem->getServers().at(i)->setInviteCode(server->getInviteCode());
       } else {
-        std::ostringstream oss;
+        ostringstream oss;
         oss << "Runtime error: You cannot change the invite code of a server that has not been created by you";
-        throw std::runtime_error(oss.str());
+        throw runtime_error(oss.str());
       }
     }
   }
@@ -234,9 +234,9 @@ void setServerInviteCode(char *arguments) {
       cout << "\n::: Modified '" << server->getName() << "' server invite code! :::\n\n";
     }
   } else {
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Runtime error: '" << server->getName() << "' server doesn’t exist";
-    throw std::runtime_error(oss.str());
+    throw runtime_error(oss.str());
   }
 }
 
@@ -246,7 +246,7 @@ void setServerInviteCode(char *arguments) {
 void listServers() {
   hasUserLogged();
 
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
     cout << "\n::: Server Name: " << concordoSystem->getServers().at(i)->getName();
     cout << "\n::: Description: " << concordoSystem->getServers().at(i)->getDescription();
     cout << "\n::: Invite Code: " << concordoSystem->getServers().at(i)->getInviteCode();
@@ -256,7 +256,7 @@ void listServers() {
 
 bool userHasAlreadyEnteredTheServer(Server *server) {
   bool hasAlreadyEntered = false;
-  for (std::vector<int>::size_type i = 0; i < server->getParticipantIds().size(); i++) {
+  for (vector<int>::size_type i = 0; i < server->getParticipantIds().size(); i++) {
     if(server->getParticipantIds().at(i) == concordoSystem->getUserLoggedId()) {
       hasAlreadyEntered = true;
       break;
@@ -291,7 +291,7 @@ void enterServer(char *arguments) {
   // Verifica na lista de servidores criados se existe um servidor com o nome informado
   // Caso haja invite é verificado se o codigo está correto
   // Antes, se o usuario logado é proprietário, a verificação do invite é desconsiderada
-  for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
     if (concordoSystem->getServers().at(i)->getName() == server->getName()) {
       serverNotFound = false;
       if(userHasAlreadyEnteredTheServer(concordoSystem->getServers().at(i)) && concordoSystem->getServers().at(i)->getInviteCode() != "") {
@@ -313,9 +313,9 @@ void enterServer(char *arguments) {
               concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
               concordoSystem->setCurrentServerName(server->getName());
             } else {
-              std::ostringstream oss;
+              ostringstream oss;
               oss << "Runtime error: Server requires invitation code";
-              throw std::runtime_error(oss.str());
+              throw runtime_error(oss.str());
             }
           }
         }
@@ -324,9 +324,9 @@ void enterServer(char *arguments) {
   }
 
   if (serverNotFound) {
-    std::ostringstream oss;
+    ostringstream oss;
     oss << "Runtime error: Server '" << server->getName() << "' not found";
-    throw std::runtime_error(oss.str());
+    throw runtime_error(oss.str());
   }
 
   if (hasAccessToServer) {
@@ -356,11 +356,11 @@ void listParticipants() {
 
   if(concordoSystem->getCurrentServerName() != "") {
     cout << "\n::: Server participants :::\n\n";
-    for (std::vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
       if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
         Server *server = concordoSystem->getServers().at(i);
         if (server->getParticipantIds().size() > 0) {
-          for (std::vector<int>::size_type j = 0; j < server->getParticipantIds().size(); j++) {
+          for (vector<int>::size_type j = 0; j < server->getParticipantIds().size(); j++) {
             User *user = concordoSystem->getUserById(server->getParticipantIds().at(j));
             cout << "★ " << user->getName() << "\n";
           }
@@ -437,10 +437,10 @@ void initializeProgram() {
       } else if (strcmp(arguments, "list-participants") == 0) {
         listParticipants();
       } else {
-        throw std::runtime_error("Runtime error: Command not found");
+        throw runtime_error("Runtime error: Command not found");
       }
-    } catch (const std::exception& e) {
-      std::cout << "\n:: " << e.what() << " ::\n\n";
+    } catch (const exception& e) {
+      cout << "\n:: " << e.what() << " ::\n\n";
     }
   }
   

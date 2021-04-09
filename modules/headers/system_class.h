@@ -12,29 +12,29 @@ using namespace std;
 
 class System {
   private:
-    std::vector <User *> users;
-    std::vector <Server *> servers;
+    vector <User *> users;
+    vector <Server *> servers;
     int userLoggedId;
-    std::string currentServerName;
-    std::string currentChannelName;
+    string currentServerName;
+    string currentChannelName;
 
   public:
     System();
     ~System();
 
-    void setUsers(std::vector <User *> users);
-    void setServers(std::vector <Server *> servers);
+    void setUsers(vector <User *> users);
+    void setServers(vector <Server *> servers);
     void setUserLoggedId(int userLoggedId);
-    void setCurrentServerName(std::string currentServerName);
-    void setCurrentChannelName(std::string currentChannelName);
+    void setCurrentServerName(string currentServerName);
+    void setCurrentChannelName(string currentChannelName);
     void addUser(User *user);
     void addServer(Server *server);
 
-    std::vector <User *> getUsers();
-    std::vector <Server *> getServers();
+    vector <User *> getUsers();
+    vector <Server *> getServers();
     int getUserLoggedId();
-    std::string getCurrentServerName();
-    std::string getCurrentChannelName();
+    string getCurrentServerName();
+    string getCurrentChannelName();
     User * getUserById(int id);
 };
 

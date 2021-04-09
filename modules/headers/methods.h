@@ -6,8 +6,8 @@ using namespace std;
 #ifndef __METHODS_H_
 #define __METHODS_H_
 
-void validateRequiredField(char *field, std::string fieldName);
-std::string convertCharToString(char *field);
+void validateRequiredField(char *field, string fieldName);
+string convertCharToString(char *field);
 void hasUserLogged();
 void createUser(char *arguments);
 void login(char *arguments);

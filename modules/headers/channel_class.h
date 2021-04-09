@@ -7,15 +7,15 @@ using namespace std;
 
 class Channel {
   private:
-    std::string name;
+    string name;
 
   public:
     Channel();
     ~Channel();
 
-    void setName(std::string name);
+    void setName(string name);
 
-    std::string getName();
+    string getName();
 };
 
 #endif

@@ -8,19 +8,19 @@ System::System(){
 };
 System::~System(){};
 
-void System::setUsers(std::vector <User *> users) {
+void System::setUsers(vector <User *> users) {
   this->users = users;
 }
-void System::setServers(std::vector <Server *> servers) {
+void System::setServers(vector <Server *> servers) {
   this->servers = servers;
 }
 void System::setUserLoggedId(int userLoggedId) {
   this->userLoggedId = userLoggedId;
 }
-void System::setCurrentServerName(std::string currentServerName) {
+void System::setCurrentServerName(string currentServerName) {
   this->currentServerName = currentServerName;
 }
-void System::setCurrentChannelName(std::string currentChannelName) {
+void System::setCurrentChannelName(string currentChannelName) {
   this->currentChannelName = currentChannelName;
 }
 void System::addUser(User *user) {
@@ -30,24 +30,24 @@ void System::addServer(Server *server) {
   this->servers.push_back(server);
 }
 
-std::vector <User *> System::getUsers() {
+vector <User *> System::getUsers() {
   return this->users;
 }
-std::vector <Server *> System::getServers() {
+vector <Server *> System::getServers() {
   return this->servers;
 }
 int System::getUserLoggedId() {
   return this->userLoggedId;
 }
-std::string System::getCurrentServerName() {
+string System::getCurrentServerName() {
   return this->currentServerName;
 }
-std::string System::getCurrentChannelName() {
+string System::getCurrentChannelName() {
   return this->currentChannelName;
 }
 User * System::getUserById(int id) {
   User *user = new User();
-  for (std::vector<int>::size_type i = 0; i < this->getUsers().size(); i++) {
+  for (vector<int>::size_type i = 0; i < this->getUsers().size(); i++) {
     if (this->getUsers().at(i)->getId() == id) {
       user =  this->getUsers().at(i);
     }

@@ -9,19 +9,19 @@ Server::~Server(){};
 void Server::setOwnerUserId(int ownerUserId) {
   this->ownerUserId = ownerUserId;
 }
-void Server::setName(std::string name) {
+void Server::setName(string name) {
   this->name = name;
 }
-void Server::setDescription(std::string description) {
+void Server::setDescription(string description) {
   this->description = description;
 }
-void Server::setInviteCode(std::string inviteCode) {
+void Server::setInviteCode(string inviteCode) {
   this->inviteCode = inviteCode;
 }
-void Server::setChannels(std::vector <Channel *> channels) {
+void Server::setChannels(vector <Channel *> channels) {
   this->channels = channels;
 }
-void Server::setParticipantIds(std::vector <int> participantIds) {
+void Server::setParticipantIds(vector <int> participantIds) {
   this->participantIds = participantIds;
 }
 void Server::addChannel(Channel *channel) {
@@ -34,18 +34,18 @@ void Server::addParticipant(int participantId) {
 int Server::getOwnerUserId() {
   return this->ownerUserId;
 }
-std::string Server::getName() {
+string Server::getName() {
   return this->name;
 }
-std::string Server::getDescription() {
+string Server::getDescription() {
   return this->description;
 }
-std::string Server::getInviteCode() {
+string Server::getInviteCode() {
   return this->inviteCode;
 }
-std::vector <Channel *> Server::getChannels() {
+vector <Channel *> Server::getChannels() {
   return this->channels;
 }
-std::vector <int> Server::getParticipantIds() {
+vector <int> Server::getParticipantIds() {
   return this->participantIds;
 }

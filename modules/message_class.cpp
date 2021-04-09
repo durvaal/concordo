@@ -3,22 +3,22 @@
 Message::Message(){};
 Message::~Message(){};
 
-void Message::setDateTime(std::string dateTime) {
+void Message::setDateTime(string dateTime) {
   this->dateTime = dateTime;
 }
-void Message::setSendBy(std::string sendBy) {
+void Message::setSendBy(string sendBy) {
   this->sendBy = sendBy;
 }
-void Message::setContent(std::string content) {
+void Message::setContent(string content) {
   this->content = content;
 }
 
-std::string Message::getDateTime() {
+string Message::getDateTime() {
   return this->dateTime;
 }
-std::string Message::getSendBy() {
+string Message::getSendBy() {
   return this->sendBy;
 }
-std::string Message::getContent() {
+string Message::getContent() {
   return this->content;
 }

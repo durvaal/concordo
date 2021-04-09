@@ -6,25 +6,25 @@ User::~User(){};
 void User::setId(int id) {
   this->id = id;
 }
-void User::setName(std::string name) {
+void User::setName(string name) {
   this->name = name;
 }
-void User::setEmail(std::string email) {
+void User::setEmail(string email) {
   this->email = email;
 }
-void User::setPassword(std::string password) {
+void User::setPassword(string password) {
   this->password = password;
 }
 
 int User::getId() {
   return this->id;
 }
-std::string User::getName() {
+string User::getName() {
   return this->name;
 }
-std::string User::getEmail() {
+string User::getEmail() {
   return this->email;
 }
-std::string User::getPassword() {
+string User::getPassword() {
   return this->password;
 }

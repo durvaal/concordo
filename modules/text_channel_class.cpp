@@ -3,10 +3,10 @@
 TextChannel::TextChannel(){};
 TextChannel::~TextChannel(){};
 
-void TextChannel::setMessages(std::vector <Message> messages) {
+void TextChannel::setMessages(vector <Message> messages) {
   this->messages = messages;
 }
 
-std::vector <Message> TextChannel::getMessages() {
+vector <Message> TextChannel::getMessages() {
   return this->messages;
 }

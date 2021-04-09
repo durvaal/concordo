@@ -7,21 +7,21 @@ using namespace std;
 
 class Message {
   private:
-    std::string dateTime;
-    std::string sendBy;
-    std::string content;
+    string dateTime;
+    string sendBy;
+    string content;
 
   public:
     Message();
     ~Message();
 
-    void setDateTime(std::string dateTime);
-    void setSendBy(std::string sendBy);
-    void setContent(std::string content);
+    void setDateTime(string dateTime);
+    void setSendBy(string sendBy);
+    void setContent(string content);
 
-    std::string getDateTime();
-    std::string getSendBy();
-    std::string getContent();
+    string getDateTime();
+    string getSendBy();
+    string getContent();
 };
 
 #endif
