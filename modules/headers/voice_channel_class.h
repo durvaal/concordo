@@ -10,15 +10,15 @@ using namespace std;
 
 class VoiceChannel: public Channel {
   private:
-    Message message;
+    Message *message;
 
   public:
     VoiceChannel();
     ~VoiceChannel();
 
-    void setMessage(Message message);
+    void setMessage(Message *message);
 
-    Message getMessage();
+    Message * getMessage();
 };
 
 #endif

@@ -10,6 +10,7 @@ void validateRequiredField(char *field, string fieldName);
 string convertCharToString(char *field);
 void hasUserLogged();
 void hasServerConnected();
+void hasChannelConnected();
 void createUser(char *arguments);
 void login(char *arguments);
 void disconnect();
@@ -25,6 +26,9 @@ void listChannels();
 void createChannel(char *arguments);
 void enterServer(char *arguments);
 void leaveChannel();
+string getDateTimeNow();
+void sendMessage(char *arguments);
+void listMessages();
 void listAvailableCommands();
 void initializeProgram();
 

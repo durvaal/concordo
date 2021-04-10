@@ -107,6 +107,16 @@ enter-channel <nome>
 leave-channel
 ```
 
+### Envia uma mensagem ao canal atualmente conectado
+```
+send-message <mensagem>
+```
+
+### Lista todas as mensagens do canal atualmente conectado
+```
+list-messages
+```
+
 ## WIP
 
 Algumas funcionalidades requeridas não foram implementadas do item 2.7 em diante.

@@ -3,10 +3,10 @@
 VoiceChannel::VoiceChannel(){};
 VoiceChannel::~VoiceChannel(){};
 
-void VoiceChannel::setMessage(Message message) {
+void VoiceChannel::setMessage(Message *message) {
   this->message = message;
 }
 
-Message VoiceChannel::getMessage() {
+Message * VoiceChannel::getMessage() {
   return this->message;
 }

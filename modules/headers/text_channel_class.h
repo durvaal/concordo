@@ -10,15 +10,15 @@ using namespace std;
 
 class TextChannel: public Channel {
   private:
-    vector <Message> messages;
+    vector <Message *> messages;
 
   public:
     TextChannel();
     ~TextChannel();
 
-    void setMessages(vector <Message> messages);
+    void addMessage(Message *message);
 
-    vector <Message> getMessages();
+    vector <Message *> getMessages();
 };
 
 #endif

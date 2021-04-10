@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <sstream>
 #include <string.h>
+#include <iomanip>
+#include <ctime>
 #include <iostream>
 #include "./headers/system_class.h"
 #include "./headers/user_class.h"
@@ -38,6 +40,14 @@ void hasServerConnected() {
   if (concordoSystem->getCurrentServerName() == "") {
     ostringstream oss;
     oss << "Runtime error: You are not connected to a server";
+    throw runtime_error(oss.str());
+  }
+}
+
+void hasChannelConnected() {
+  if (concordoSystem->getCurrentChannelName() == "") {
+    ostringstream oss;
+    oss << "Runtime error: You are not connected to a channel";
     throw runtime_error(oss.str());
   }
 }
@@ -353,8 +363,9 @@ void leaveServer() {
   hasUserLogged();
 
   if(concordoSystem->getCurrentServerName() != "") {
-    cout << "\n::: Exiting the server'" << concordoSystem->getCurrentServerName() << "' :::\n\n";
+    cout << "\n::: Exiting the server '" << concordoSystem->getCurrentServerName() << "' :::\n\n";
     concordoSystem->setCurrentServerName("");
+    concordoSystem->setCurrentChannelName("");
   } else {
     cout << "\n::: You are not viewing any servers :::\n\n";
   }
@@ -539,6 +550,108 @@ void leaveChannel() {
   }
 }
 
+string getDateTimeNow() {
+  auto customTime = time(nullptr);
+  auto customLocalTime = *localtime(&customTime);
+  ostringstream oss;
+  
+  oss << put_time(&customLocalTime, "%d/%m/%Y %H:%M");
+    
+  return oss.str();
+}
+
+/*
+  Envia uma menssagem ao canal atualmente conectado do servidor atualmente conectado
+*/
+void sendMessage(char *arguments) {
+  hasUserLogged();
+  hasServerConnected();
+  hasChannelConnected();
+
+  // Valida os campos necessário para enviar mensagem ao canal
+  char *message = strtok(NULL, "");
+  validateRequiredField(message, "message");
+
+  Message *userMessage = new Message();
+  User *user = concordoSystem->getUserById(concordoSystem->getUserLoggedId());
+
+  userMessage->setContent(message);
+  userMessage->setDateTime(getDateTimeNow());
+  userMessage->setSendBy(user->getName());
+
+  // Encontra o canal e o servidor conectado, e dependo do tipo do canal, enviara a mensagem de voz ou texto
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+      Server *server = concordoSystem->getServers().at(i);
+    
+      for (vector<int>::size_type j = 0; j < server->getTextChannels().size(); j++) {
+        if (server->getTextChannels().at(j)->getName() == concordoSystem->getCurrentChannelName()) {
+          server->getTextChannels().at(j)->addMessage(userMessage);
+        }
+      }
+
+      for (vector<int>::size_type j = 0; j < server->getVoiceChannels().size(); j++) {
+        if (server->getVoiceChannels().at(j)->getName() == concordoSystem->getCurrentChannelName()) {
+          server->getVoiceChannels().at(j)->setMessage(userMessage);
+        }
+      }
+    }
+  }
+
+  cout << "\n::: Message sent on the '" << concordoSystem->getCurrentServerName() << "' server '" << concordoSystem->getCurrentChannelName() << "' channel :::\n\n";
+}
+
+/*
+  Lista as menssagens do canal atualmente conectado do servidor atualmente conectado
+*/
+void listMessages() {
+  hasUserLogged();
+  hasServerConnected();
+  hasChannelConnected();
+
+  bool isTextChannel = false;
+
+  // Encontra o canal e o servidor conectado, e dependo do tipo do canal, enviara a mensagem de voz ou texto
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+      Server *server = concordoSystem->getServers().at(i);
+    
+      for (vector<int>::size_type j = 0; j < server->getTextChannels().size(); j++) {
+        if (server->getTextChannels().at(j)->getName() == concordoSystem->getCurrentChannelName()) {
+          isTextChannel = true;
+          TextChannel *textChannel = server->getTextChannels().at(j);
+          
+          cout << "\n";
+          
+          for (vector<int>::size_type k = 0; k < textChannel->getMessages().size(); k++) {
+            Message *message = textChannel->getMessages().at(k);
+
+            cout << message->getSendBy() << "<" << message->getDateTime() << ">: " << message->getContent() << "\n";
+          }
+
+          cout << "\n\n";
+        }
+      }
+
+      if (isTextChannel == false) {
+        for (vector<int>::size_type j = 0; j < server->getVoiceChannels().size(); j++) {
+          if (server->getVoiceChannels().at(j)->getName() == concordoSystem->getCurrentChannelName()) {
+            VoiceChannel *voiceChannel = server->getVoiceChannels().at(j);
+            Message *message = voiceChannel->getMessage();
+            
+            cout << "\n";
+            
+            if (message != NULL) {
+              cout << message->getSendBy() << "<" << message->getDateTime() << ">: " << message->getContent();
+            }
+
+            cout << "\n\n";
+          }
+        }
+      }
+    }
+  }
+}
 
 void listAvailableCommands() {
   cout << "\n:::: Available Commands ::::\n\n";
@@ -557,6 +670,8 @@ void listAvailableCommands() {
   cout << "create-channel                                 Create new channel on the currently connected server\n";
   cout << "enter-channel <name>                           Enter in the channel on the currently connected server\n";
   cout << "leave-channel                                  Exit the currently connected channel on the currently connected server\n";
+  cout << "send-message <message>                         Send message to the connected channel\n";
+  cout << "list-messages                                  List all messages from the connected channel\n";
   cout << "\n";
 }
 
@@ -612,6 +727,10 @@ void initializeProgram() {
         enterChannel(arguments);
       } else if (strcmp(arguments, "leave-channel") == 0) {
         leaveChannel();
+      } else if (strcmp(arguments, "send-message") == 0) {
+        sendMessage(arguments);
+      } else if (strcmp(arguments, "list-messages") == 0) {
+        listMessages();
       } else if (strcmp(arguments, "help") == 0) {
         listAvailableCommands();
       } else {
