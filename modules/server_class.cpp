@@ -1,7 +1,8 @@
 #include "./headers/server_class.h"
 
 Server::Server(){
-  this->channels.reserve(1000);
+  this->textChannels.reserve(1000);
+  this->voiceChannels.reserve(1000);
   this->participantIds.reserve(1000);
 };
 Server::~Server(){};
@@ -18,14 +19,20 @@ void Server::setDescription(string description) {
 void Server::setInviteCode(string inviteCode) {
   this->inviteCode = inviteCode;
 }
-void Server::setChannels(vector <Channel *> channels) {
-  this->channels = channels;
+void Server::setTextChannels(vector <TextChannel *> textChannels) {
+  this->textChannels = textChannels;
+}
+void Server::setVoiceChannels(vector <VoiceChannel *> voiceChannels) {
+  this->voiceChannels = voiceChannels;
 }
 void Server::setParticipantIds(vector <int> participantIds) {
   this->participantIds = participantIds;
 }
-void Server::addChannel(Channel *channel) {
-  this->channels.push_back(channel);
+void Server::addTextChannel(TextChannel *textchannel) {
+  this->textChannels.push_back(textchannel);
+}
+void Server::addVoiceChannel(VoiceChannel *voiceChannel) {
+  this->voiceChannels.push_back(voiceChannel);
 }
 void Server::addParticipant(int participantId) {
   this->participantIds.push_back(participantId);
@@ -43,8 +50,11 @@ string Server::getDescription() {
 string Server::getInviteCode() {
   return this->inviteCode;
 }
-vector <Channel *> Server::getChannels() {
-  return this->channels;
+vector <TextChannel *> Server::getTextChannels() {
+  return this->textChannels;
+}
+vector <VoiceChannel *> Server::getVoiceChannels() {
+  return this->voiceChannels;
 }
 vector <int> Server::getParticipantIds() {
   return this->participantIds;

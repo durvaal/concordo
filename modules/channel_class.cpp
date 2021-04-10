@@ -3,10 +3,10 @@
 Channel::Channel(){};
 Channel::~Channel(){};
 
-void Channel::setName(string name) {
+void Channel::setName(std::string name) {
   this->name = name;
 }
 
-string Channel::getName() {
+std::string Channel::getName() {
   return this->name;
 }

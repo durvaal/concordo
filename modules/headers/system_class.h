@@ -8,7 +8,6 @@ using namespace std;
 
 #include "user_class.h"
 #include "server_class.h"
-#include "channel_class.h"
 
 class System {
   private:

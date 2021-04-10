@@ -86,6 +86,27 @@ leave-server
 list-participants
 ```
 
+### Listar canais disponíveis
+```
+list-channels
+```
+
+### Criar canal
+```
+create-channel <nome> <tipo>
+```
+> O tipo deve ser `text` ou `voice`
+
+### Entrar em um canal no servidor atualmente conectado
+```
+enter-channel <nome>
+```
+
+### Sair de um canal no servidor atualmente conectado
+```
+leave-channel
+```
+
 ## WIP
 
 Algumas funcionalidades requeridas não foram implementadas do item 2.7 em diante.

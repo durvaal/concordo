@@ -6,8 +6,9 @@ using namespace std;
 #define __TEXT_CHANNEL_CLASS_H_
 
 #include "message_class.h"
+#include "channel_class.h"
 
-class TextChannel {
+class TextChannel: public Channel {
   private:
     vector <Message> messages;
 

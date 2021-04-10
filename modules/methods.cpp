@@ -5,9 +5,11 @@
 #include <iostream>
 #include "./headers/system_class.h"
 #include "./headers/user_class.h"
+#include "./headers/text_channel_class.h"
+#include "./headers/voice_channel_class.h"
 #include "./headers/methods.h"
 
-class System *concordoSystem = new System();
+System *concordoSystem = new System();
 int currentUserId = 0;
 
 void validateRequiredField(char *field, string fieldName) {
@@ -32,6 +34,14 @@ void hasUserLogged() {
   }
 }
 
+void hasServerConnected() {
+  if (concordoSystem->getCurrentServerName() == "") {
+    ostringstream oss;
+    oss << "Runtime error: You are not connected to a server";
+    throw runtime_error(oss.str());
+  }
+}
+
 /*
   Cria um novo usuário caso todos os campos tenham sido informados e se não existir um usuário cadastrado com o email informado
 */
@@ -45,7 +55,7 @@ void createUser(char *arguments) {
   char *name = strtok(NULL, "");
   validateRequiredField(name, "name");
 
-  class User *user = new User();
+  User *user = new User();
 
   user->setEmail(convertCharToString(email));
   user->setPassword(convertCharToString(password));
@@ -78,7 +88,7 @@ void login(char *arguments) {
   char *password = strtok(NULL, "");
   validateRequiredField(password, "password");
 
-  class User *user = new User();
+  User *user = new User();
 
   user->setEmail(convertCharToString(email));
   user->setPassword(convertCharToString(password));
@@ -101,6 +111,7 @@ void login(char *arguments) {
     throw runtime_error(oss.str());
   } else {
     concordoSystem->setCurrentServerName("");
+    concordoSystem->setCurrentChannelName("");
     cout << "\n::: Logged is as " << user->getEmail() << " :::\n\n"; 
   }
 }
@@ -116,6 +127,7 @@ void disconnect() {
     if (concordoSystem->getUsers().at(i)->getId() == concordoSystem->getUserLoggedId()) {
       concordoSystem->setUserLoggedId(0);
       concordoSystem->setCurrentServerName("");
+      concordoSystem->setCurrentChannelName("");
       cout << "\n::: Disconnecting user " << concordoSystem->getUsers().at(i)->getEmail() << " :::\n\n"; 
       break;
     }
@@ -132,7 +144,7 @@ void createServer(char *arguments) {
   char *name = strtok(NULL, "");
   validateRequiredField(name, "name");
 
-  class Server *server = new Server();
+  Server *server = new Server();
 
   server->setName(convertCharToString(name));
   server->setOwnerUserId(concordoSystem->getUserLoggedId());
@@ -148,7 +160,7 @@ void createServer(char *arguments) {
 
   concordoSystem->addServer(server);
 
-  cout << "\n::: Created server :::\n\n";
+  cout << "\n::: Created server '" << server->getName() << "' :::\n\n";
 }
 
 /*
@@ -164,7 +176,7 @@ void setServerDescription(char *arguments) {
   validateRequiredField(description, "description");
 
   bool updatedDescription = false;
-  class Server *server = new Server();
+  Server *server = new Server();
 
   server->setName(convertCharToString(serverName));
   server->setDescription(convertCharToString(description));
@@ -204,7 +216,7 @@ void setServerInviteCode(char *arguments) {
   char *inviteCode = strtok(NULL, "");
 
   bool updatedInviteCode = false;
-  class Server *server = new Server();
+  Server *server = new Server();
 
   server->setName(convertCharToString(serverName));
   if (inviteCode == NULL) {
@@ -279,7 +291,7 @@ void enterServer(char *arguments) {
 
   bool hasAccessToServer = false;
   bool serverNotFound = true;
-  class Server *server = new Server();
+  Server *server = new Server();
 
   server->setName(convertCharToString(serverName));
   if (inviteCode == NULL) {
@@ -330,7 +342,7 @@ void enterServer(char *arguments) {
   }
 
   if (hasAccessToServer) {
-    cout << "\n::: Successfully logged on to the server '" << server->getName() << "' :::\n\n";
+    cout << "\n::: Successfully connected on to the server '" << server->getName() << "' :::\n\n";
   }
 }
 
@@ -353,25 +365,177 @@ void leaveServer() {
 */
 void listParticipants() {
   hasUserLogged();
+  hasServerConnected();
 
-  if(concordoSystem->getCurrentServerName() != "") {
-    cout << "\n::: Server participants :::\n\n";
-    for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
-      if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
-        Server *server = concordoSystem->getServers().at(i);
-        if (server->getParticipantIds().size() > 0) {
-          for (vector<int>::size_type j = 0; j < server->getParticipantIds().size(); j++) {
-            User *user = concordoSystem->getUserById(server->getParticipantIds().at(j));
-            cout << "★ " << user->getName() << "\n";
-          }
-        } else {
-          cout << "\n: No registered participants :\n";
+  cout << "\n::: Server participants :::\n\n";
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+      Server *server = concordoSystem->getServers().at(i);
+      if (server->getParticipantIds().size() > 0) {
+        for (vector<int>::size_type j = 0; j < server->getParticipantIds().size(); j++) {
+          User *user = concordoSystem->getUserById(server->getParticipantIds().at(j));
+          cout << "★ " << user->getName() << "\n";
         }
-        cout << "\n";
+      } else {
+        cout << "\n: No registered participants :\n";
+      }
+      cout << "\n";
+    }
+  }
+}
+
+/*
+  Lista todos os canais disponíves do servidor atualmente connectado
+*/
+void listChannels() {
+  hasUserLogged();
+  hasServerConnected();
+
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+      Server *server = concordoSystem->getServers().at(i);
+      cout << "\n::: # Channel of text :::\n\n";
+      if (server->getTextChannels().size() <= 0) {
+        cout << "\n: No registered channels of voice :\n";
+      }
+      for (vector<int>::size_type j = 0; j < server->getTextChannels().size(); j++) {
+        cout << "★ " << server->getTextChannels().at(j)->getName() << "\n";
+      }
+      cout << "\n";
+      cout << "\n::: # Channel of voice :::\n\n";
+      if (server->getVoiceChannels().size() <= 0) {
+        cout << "\n: No registered channels of text :\n";
+      }
+      for (vector<int>::size_type j = 0; j < server->getVoiceChannels().size(); j++) {
+        cout << "★ " << server->getVoiceChannels().at(j)->getName() << "\n";
+      }
+      cout << "\n";
+    }
+  }
+}
+
+/*
+  Cria um canal de voz ou text no servidor atualmente conectado
+*/
+void createChannel(char *arguments) {
+  hasUserLogged();
+  hasServerConnected();
+
+  // Valida os campos necessário para criar o canal no servidor
+  char *name = strtok(NULL, " ");
+  validateRequiredField(name, "name");
+  char *type = strtok(NULL, "");
+  validateRequiredField(type, "type");
+
+  string channelName = convertCharToString(name);
+
+  if(convertCharToString(type) != "text" && convertCharToString(type) != "voice") {
+    ostringstream oss;
+    oss << "Runtime error: Not a valid type, please inform: 'text' or 'voice'";
+    throw runtime_error(oss.str());
+  }
+
+  // Encontra o servidor conectado, e dependo do tipo do canal, busca se há canal com o mesmo nome, caso não exista insere um novo canal
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+      Server *server = concordoSystem->getServers().at(i);
+
+      if(strcmp(type, "text") == 0) {
+        for (vector<int>::size_type j = 0; j < server->getTextChannels().size(); j++) {
+          if (server->getTextChannels().at(j)->getName() == channelName) {
+            ostringstream oss;
+            oss << "Runtime error: Channel with name '" << server->getName() << "' already exists";
+            throw runtime_error(oss.str());
+          }
+        }
+
+        TextChannel *textChannel = new TextChannel();
+        textChannel->setName(channelName);
+
+        server->addTextChannel(textChannel);
+      } else {
+        for (vector<int>::size_type j = 0; j < server->getVoiceChannels().size(); j++) {
+          if (server->getVoiceChannels().at(j)->getName() == channelName) {
+            ostringstream oss;
+            oss << "Runtime error: Channel with name '" << server->getName() << "' already exists";
+            throw runtime_error(oss.str());
+          }
+        }
+
+        VoiceChannel *voiceChannel = new VoiceChannel();
+        voiceChannel->setName(channelName);
+
+        server->addVoiceChannel(voiceChannel);
       }
     }
+  }
+
+  cout << "\n::: Created channel '" << channelName << "' of type '" << type << "' :::\n\n";
+}
+
+/*
+  Entrar em um canal do servidor atualmente conectado
+*/
+void enterChannel(char *arguments) {
+  hasUserLogged();
+  hasServerConnected();
+
+  // Valida os campos necessário para entrar no canal
+  char *name = strtok(NULL, "");
+  validateRequiredField(name, "name");
+
+  bool hasAccessToChannel = false;
+  bool channelNotFound = true;
+
+  string channelName = convertCharToString(name);
+
+  // Encontra o servidor conectado, e dependo do tipo do canal, busca se há canal com o mesmo nome, caso não exista insere um novo canal
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    if (concordoSystem->getServers().at(i)->getName() == concordoSystem->getCurrentServerName()) {
+      Server *server = concordoSystem->getServers().at(i);
+    
+      for (vector<int>::size_type j = 0; j < server->getTextChannels().size(); j++) {
+        if (server->getTextChannels().at(j)->getName() == channelName) {
+          channelNotFound = false;
+          hasAccessToChannel = true;
+          concordoSystem->setCurrentChannelName(channelName);
+        }
+      }
+
+      for (vector<int>::size_type j = 0; j < server->getVoiceChannels().size(); j++) {
+        if (server->getVoiceChannels().at(j)->getName() == channelName) {
+          channelNotFound = false;
+          hasAccessToChannel = true;
+          concordoSystem->setCurrentChannelName(channelName);
+        }
+      }
+    }
+  }
+
+  if (channelNotFound) {
+    ostringstream oss;
+    oss << "Runtime error: Channel '" << channelName << "' not found";
+    throw runtime_error(oss.str());
+  }
+
+  if (hasAccessToChannel) {
+    cout << "\n::: Joined the channel '" << channelName << "' :::\n\n";
+  }
+}
+
+/*
+  Sai do canal atualmente conectado
+*/
+void leaveChannel() {
+  hasUserLogged();
+  hasServerConnected();
+
+  if(concordoSystem->getCurrentChannelName() != "") {
+    cout << "\n::: Exiting the channel '" << concordoSystem->getCurrentChannelName() << "' :::\n\n";
+    concordoSystem->setCurrentChannelName("");
+    concordoSystem->setCurrentChannelName("");
   } else {
-    cout << "\n::: You are not viewing any servers :::\n\n";
+    cout << "\n::: You are not viewing any channels :::\n\n";
   }
 }
 
@@ -387,6 +551,12 @@ void listAvailableCommands() {
   cout << "set-server-invite-code <name> <inviteCode>     Change server invite code, optional inviteCode argument\n";
   cout << "list-servers                                   List all servers\n";
   cout << "enter-server <name> <inviteCode>               Enter in the server, optional inviteCode argument\n";
+  cout << "leave-server                                   Exit the currently connected server\n";
+  cout << "list-participants                              Lists participants from the currently connected server\n";
+  cout << "list-channels                                  Lists the channels available on the currently connected server\n";
+  cout << "create-channel                                 Create new channel on the currently connected server\n";
+  cout << "enter-channel <name>                           Enter in the channel on the currently connected server\n";
+  cout << "leave-channel                                  Exit the currently connected channel on the currently connected server\n";
   cout << "\n";
 }
 
@@ -432,10 +602,18 @@ void initializeProgram() {
         enterServer(arguments);
       } else if (strcmp(arguments, "leave-server") == 0) {
         leaveServer();
-      } else if (strcmp(arguments, "leave-server") == 0) {
-        leaveServer();
       } else if (strcmp(arguments, "list-participants") == 0) {
         listParticipants();
+      } else if (strcmp(arguments, "list-channels") == 0) {
+        listChannels();
+      } else if (strcmp(arguments, "create-channel") == 0) {
+        createChannel(arguments);
+      } else if (strcmp(arguments, "enter-channel") == 0) {
+        enterChannel(arguments);
+      } else if (strcmp(arguments, "leave-channel") == 0) {
+        leaveChannel();
+      } else if (strcmp(arguments, "help") == 0) {
+        listAvailableCommands();
       } else {
         throw runtime_error("Runtime error: Command not found");
       }

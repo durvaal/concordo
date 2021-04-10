@@ -5,6 +5,7 @@ System::System(){
   this->servers.reserve(1000);
   this->userLoggedId = 0;
   this->currentServerName = "";
+  this->currentChannelName = "";
 };
 System::~System(){};
 
