@@ -30,6 +30,16 @@ void System::addUser(User *user) {
 void System::addServer(Server *server) {
   this->servers.push_back(server);
 }
+void System::clearSystem() {
+  for (auto server : this->servers) {
+    delete server;
+  }
+  this->servers.clear();
+  for (auto user : this->users) {
+    delete user;
+  }
+  this->users.clear();
+}
 
 vector <User *> System::getUsers() {
   return this->users;
