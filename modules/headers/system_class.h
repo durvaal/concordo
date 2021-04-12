@@ -28,6 +28,7 @@ class System {
     void setCurrentChannelName(string currentChannelName);
     void addUser(User *user);
     void addServer(Server *server);
+    void clearSystem();
 
     vector <User *> getUsers();
     vector <Server *> getServers();

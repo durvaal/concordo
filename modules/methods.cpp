@@ -120,10 +120,13 @@ void login(char *arguments) {
     oss << "Runtime error: Invalid email or password";
     throw runtime_error(oss.str());
   } else {
+    // São resetadas as informações de servidor conectado e canal conectado, já que pode ser o login de usuário diferente
     concordoSystem->setCurrentServerName("");
     concordoSystem->setCurrentChannelName("");
     cout << "\n::: Logged is as " << user->getEmail() << " :::\n\n"; 
   }
+
+  delete user;
 }
 
 /*
@@ -133,6 +136,7 @@ void disconnect() {
   hasUserLogged();
 
   // Verifica se há um usuário com id do usuario logado
+  // São resetadas as informações de id, servidor conectado e canal conectado
   for (vector<int>::size_type i = 0; i < concordoSystem->getUsers().size(); i++) {
     if (concordoSystem->getUsers().at(i)->getId() == concordoSystem->getUserLoggedId()) {
       concordoSystem->setUserLoggedId(0);
@@ -351,9 +355,13 @@ void enterServer(char *arguments) {
     throw runtime_error(oss.str());
   }
 
+  // É resetada a informação do canal conectado, pois ele se refere ao contexto do canal que foi desconectado
   if (hasAccessToServer) {
+    concordoSystem->setCurrentChannelName("");
     cout << "\n::: Successfully connected on to the server '" << server->getName() << "' :::\n\n";
   }
+
+  delete server;
 }
 
 /*
@@ -362,6 +370,7 @@ void enterServer(char *arguments) {
 void leaveServer() {
   hasUserLogged();
 
+  // São resetadas as informações de servidor conectado e canal conectado
   if(concordoSystem->getCurrentServerName() != "") {
     cout << "\n::: Exiting the server '" << concordoSystem->getCurrentServerName() << "' :::\n\n";
     concordoSystem->setCurrentServerName("");
@@ -544,7 +553,6 @@ void leaveChannel() {
   if(concordoSystem->getCurrentChannelName() != "") {
     cout << "\n::: Exiting the channel '" << concordoSystem->getCurrentChannelName() << "' :::\n\n";
     concordoSystem->setCurrentChannelName("");
-    concordoSystem->setCurrentChannelName("");
   } else {
     cout << "\n::: You are not viewing any channels :::\n\n";
   }
@@ -698,8 +706,8 @@ void initializeProgram() {
       if (strcmp(arguments, "login") == 0) {
         login(arguments);
       } else if (strcmp(arguments, "quit") == 0) {
-        cout << "Bye bye... \n";
-        free(concordoSystem);
+        concordoSystem->clearSystem();
+        cout << "\n Bye bye... \n";
         exit(0);
       } else if (strcmp(arguments, "create-user") == 0) {
         createUser(arguments);
