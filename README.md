@@ -117,6 +117,18 @@ send-message <mensagem>
 list-messages
 ```
 
+### Salvar Sistema
+```
+save-system
+```
+> Salva os dados da aplicação nos arquivos: `users.txt` e `servers.txt`
+
+### Carregar Sistema
+```
+load-system
+```
+> Carregar os dados da aplicação a partir dos arquivos salvos: `users.txt` e `servers.txt`
+
 ## WIP
 
 Algumas funcionalidades requeridas não foram implementadas do item 2.7 em diante.

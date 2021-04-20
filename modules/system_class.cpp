@@ -40,6 +40,14 @@ void System::clearSystem() {
   }
   this->users.clear();
 }
+void System::save() {
+  this->saveUsers();
+  this->saveServers();
+}
+void System::load() {
+  this->loadUsers();
+  this->loadServers();
+}
 
 vector <User *> System::getUsers() {
   return this->users;

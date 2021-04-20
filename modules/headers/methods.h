@@ -29,6 +29,8 @@ void leaveChannel();
 string getDateTimeNow();
 void sendMessage(char *arguments);
 void listMessages();
+void saveSystem();
+void loadSystem();
 void listAvailableCommands();
 void initializeProgram();
 

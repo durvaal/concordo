@@ -661,6 +661,22 @@ void listMessages() {
   }
 }
 
+/*
+  Salva os dados de usuários e servidores em arquivos de texto
+*/
+void saveSystem() {
+  concordoSystem->save();
+  cout << "\n::: Users and servers successfully saved to the 'users.txt' and the 'servers.txt' files :::\n\n";
+}
+
+/*
+  Carregar os dados de usuários e servidores a partir dos arquivos de texto
+*/
+void loadSystem() {
+  concordoSystem->load();
+  cout << "\n::: Users and servers successfully loaded from the 'users.txt' and the 'servers.txt' files :::\n\n";
+}
+
 void listAvailableCommands() {
   cout << "\n:::: Available Commands ::::\n\n";
   cout << "quit                                           Exit the system\n";
@@ -739,6 +755,10 @@ void initializeProgram() {
         sendMessage(arguments);
       } else if (strcmp(arguments, "list-messages") == 0) {
         listMessages();
+      } else if (strcmp(arguments, "save-system") == 0) {
+        saveSystem();
+      } else if (strcmp(arguments, "load-system") == 0) {
+        loadSystem();
       } else if (strcmp(arguments, "help") == 0) {
         listAvailableCommands();
       } else {
