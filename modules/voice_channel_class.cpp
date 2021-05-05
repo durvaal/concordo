@@ -1,6 +1,8 @@
 #include "./headers/voice_channel_class.h"
 
-VoiceChannel::VoiceChannel(){};
+VoiceChannel::VoiceChannel(){
+  this->message = new Message();
+};
 VoiceChannel::~VoiceChannel(){};
 
 void VoiceChannel::setMessage(Message *message) {

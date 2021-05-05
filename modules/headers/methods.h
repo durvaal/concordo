@@ -19,6 +19,7 @@ void setServerDescription(char *arguments);
 void setServerInviteCode(char *arguments);
 void listServers();
 bool userHasAlreadyEnteredTheServer(Server *server);
+bool hasEnteredInServer();
 void enterServer(char *arguments);
 void leaveServer();
 void listParticipants();

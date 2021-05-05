@@ -1,1 +1,24 @@
-0
+1
+1
+concordo
+Melhor Canal
+
+2
+1
+2
+2
+texto
+TEXT
+2
+Jardenia
+23/04/2021 22:40
+buenos dias
+Paulo
+23/04/2021 22:42
+buenos dias, chica
+voz
+VOICE
+1 
+Paulo
+23/04/2021 22:39
+ola mundo

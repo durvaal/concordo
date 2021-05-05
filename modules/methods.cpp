@@ -85,6 +85,7 @@ void createUser(char *arguments) {
   user->setId(currentUserId);
 
   concordoSystem->addUser(user);
+  saveSystem();
 
   cout << "\n::: Created user :::\n\n";
 }
@@ -173,6 +174,7 @@ void createServer(char *arguments) {
   }
 
   concordoSystem->addServer(server);
+  saveSystem();
 
   cout << "\n::: Created server '" << server->getName() << "' :::\n\n";
 }
@@ -211,6 +213,7 @@ void setServerDescription(char *arguments) {
 
   if (updatedDescription) {
     cout << "\n::: Modified '" << server->getName() << "' server description! :::\n\n";
+    saveSystem();
   } else {
     ostringstream oss;
     oss << "Runtime error: '" << server->getName() << "' server doesn’t exist";
@@ -259,6 +262,7 @@ void setServerInviteCode(char *arguments) {
     } else {
       cout << "\n::: Modified '" << server->getName() << "' server invite code! :::\n\n";
     }
+    saveSystem();
   } else {
     ostringstream oss;
     oss << "Runtime error: '" << server->getName() << "' server doesn’t exist";
@@ -278,6 +282,7 @@ void listServers() {
     cout << "\n::: Invite Code: " << concordoSystem->getServers().at(i)->getInviteCode();
     cout << "\n";
   }
+  cout << "\n";
 }
 
 bool userHasAlreadyEnteredTheServer(Server *server) {
@@ -290,6 +295,18 @@ bool userHasAlreadyEnteredTheServer(Server *server) {
   }
 
   return hasAlreadyEntered;
+}
+
+bool hasEnteredInServer() {
+  for (vector<int>::size_type i = 0; i < concordoSystem->getServers().size(); i++) {
+    for (vector<int>::size_type j = 0; j < concordoSystem->getServers().at(i)->getParticipantIds().size(); j++) {
+      if (concordoSystem->getServers().at(i)->getParticipantIds().at(j) == concordoSystem->getUserLoggedId()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /*
@@ -326,17 +343,23 @@ void enterServer(char *arguments) {
       } else {
         if (concordoSystem->getServers().at(i)->getOwnerUserId() == concordoSystem->getUserLoggedId() && concordoSystem->getCurrentServerName() == server->getName()) {
           hasAccessToServer = true;
-          concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+          if (!hasEnteredInServer()) {
+            concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+          }
           concordoSystem->setCurrentServerName(server->getName());
         } else {
           if (concordoSystem->getServers().at(i)->getInviteCode() == "") {
             hasAccessToServer = true;
+          if (!hasEnteredInServer()) {
             concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+          }
             concordoSystem->setCurrentServerName(server->getName());
           } else {
             if (concordoSystem->getServers().at(i)->getInviteCode() == server->getInviteCode()) {
               hasAccessToServer = true;
-              concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+          if (!hasEnteredInServer()) {
+            concordoSystem->getServers().at(i)->addParticipant(concordoSystem->getUserLoggedId());
+          }
               concordoSystem->setCurrentServerName(server->getName());
             } else {
               ostringstream oss;
@@ -359,6 +382,7 @@ void enterServer(char *arguments) {
   if (hasAccessToServer) {
     concordoSystem->setCurrentChannelName("");
     cout << "\n::: Successfully connected on to the server '" << server->getName() << "' :::\n\n";
+    saveSystem();
   }
 
   delete server;
@@ -491,6 +515,7 @@ void createChannel(char *arguments) {
   }
 
   cout << "\n::: Created channel '" << channelName << "' of type '" << type << "' :::\n\n";
+  saveSystem();
 }
 
 /*
@@ -540,6 +565,7 @@ void enterChannel(char *arguments) {
 
   if (hasAccessToChannel) {
     cout << "\n::: Joined the channel '" << channelName << "' :::\n\n";
+    saveSystem();
   }
 }
 
@@ -607,6 +633,7 @@ void sendMessage(char *arguments) {
   }
 
   cout << "\n::: Message sent on the '" << concordoSystem->getCurrentServerName() << "' server '" << concordoSystem->getCurrentChannelName() << "' channel :::\n\n";
+  saveSystem();
 }
 
 /*
@@ -666,7 +693,6 @@ void listMessages() {
 */
 void saveSystem() {
   concordoSystem->save();
-  cout << "\n::: Users and servers successfully saved to the 'users.txt' and the 'servers.txt' files :::\n\n";
 }
 
 /*
@@ -674,7 +700,6 @@ void saveSystem() {
 */
 void loadSystem() {
   concordoSystem->load();
-  cout << "\n::: Users and servers successfully loaded from the 'users.txt' and the 'servers.txt' files :::\n\n";
 }
 
 void listAvailableCommands() {
@@ -711,6 +736,8 @@ void initializeProgram() {
 
   cout << "::::: Welcome to Concordo :::::\n\n";
   cout << ":::: Type 'help' to list the available commands ::::\n\n";
+
+  loadSystem();
 
   do {
     scanf("%[^\n]", commandLine);
@@ -755,10 +782,6 @@ void initializeProgram() {
         sendMessage(arguments);
       } else if (strcmp(arguments, "list-messages") == 0) {
         listMessages();
-      } else if (strcmp(arguments, "save-system") == 0) {
-        saveSystem();
-      } else if (strcmp(arguments, "load-system") == 0) {
-        loadSystem();
       } else if (strcmp(arguments, "help") == 0) {
         listAvailableCommands();
       } else {
